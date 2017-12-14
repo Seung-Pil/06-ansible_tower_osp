@@ -19,8 +19,8 @@
         dest: "/var/lib/awx/.ssh/config"
         mode: 0400
           
-- name: where am i
-  command: "ls -al"
+    - name: where am i
+      command: "ls -al"
 
 - hosts: jumpbox
   gather_facts: false
