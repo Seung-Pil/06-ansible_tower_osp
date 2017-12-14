@@ -1,3 +1,27 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: create ssh config for jumphost in tower
+      copy:
+        content: |
+          Hostname "{{ jumpbox }}"
+          IdentityFile ~/.ssh/openstack.pem
+           ForwardAgent yes
+           User cloud-user
+           StrictHostKeyChecking no
+           PasswordAuthentication no
+          Host 10.10.10.*
+           User cloud-user
+           IdentityFile ~/.ssh/openstack.pem
+           ProxyCommand ssh cloud-user@"{{ jumpbox }}" -W %h:%p -vvv
+           StrictHostKeyChecking no
+        dest: "/var/lib/awx/.ssh/config"
+        mode: 0400
+          
+- name: where am i
+  command: "ls -al"
+
 - hosts: jumpbox
   gather_facts: false
   tasks:
