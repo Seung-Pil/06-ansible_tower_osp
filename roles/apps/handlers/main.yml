@@ -1,0 +1,6 @@
+---
+# handlers file for roles/apps
+- name: Restart Service to apply config 
+  service:
+    name: firwalld.service
+    state: restarted

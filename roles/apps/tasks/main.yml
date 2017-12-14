@@ -1,0 +1,66 @@
+---
+# tasks file for roles/apps
+- name: deploy tomcat
+  debug:
+    msg: "start deploy tomcat"
+#  hosts: apps
+#  gather_facts: false
+#  become: true
+
+#  tasks:
+- name: install tomcat
+#####    package:
+  yum:
+    name: tomcat
+    state: latest
+- name: enable tomcat at boot
+  service:
+    name: tomcat
+    enabled: yes
+
+- name: create ansible tomcat directory
+  file:
+    path: /usr/share/tomcat/webapps/ROOT
+    state: directory
+
+- name: copy static index.html to tomcat webapps/ansible/index.html
+  template:
+    src: index.html.j2
+    dest: /usr/share/tomcat/webapps/ROOT/index.html
+    mode: 0644
+
+- name: start tomcat
+  service:
+    name: tomcat
+    state: started
+
+- name: index.html on apps
+  debug:
+    msg: "start index.html on apps"
+
+#  tasks:
+- name: create ansible tomcat directory
+  file:
+    path: /usr/share/tomcat/webapps/ansible
+    state: directory
+
+- name: copy template index.html to tomcat webapps/ansible/index.html
+  template:
+    src: index.html.j2
+    dest: /usr/share/tomcat/webapps/ansible/index.html
+    mode: 0644
+  notify: Restart Service to apply config
+
+- name: Config Firewall - 8080/tcp
+  firewalld:
+    port: 8080/tcp 
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Config Firewall - 80/tcp
+  firewalld:
+    port: 80/tcp 
+    permanent: true
+    immediate: true
+    state: enabled

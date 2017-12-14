@@ -1,0 +1,49 @@
+---
+# tasks file for roles/frontends
+- name: Print variable value for debug -1
+  debug: var=hostvars[host]['inventory_hostname']
+
+- name: Print variable value for debug -2
+  debug: 
+      var: groups['apps']
+
+- name: deploy haproxy
+  debug:
+    msg: "start deploy haproxy"
+
+- name: http
+  yum:
+    name: httpd
+#####    name: httpie
+    state: latest
+#####    package:
+#####      name: httpie
+- name: install HAProxy
+  yum:
+    name: haproxy
+    state: latest
+#####      name=haproxy state=latest
+- name: enable HAProxy
+  service:
+    name: haproxy
+    state: started
+
+- name: configure haproxy
+  template:
+    src: ./haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: restart HAproxy
+
+- name: Config Firewall - 8080/tcp
+  firewalld:
+    port: 8080/tcp 
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Config Firewall - 80/tcp
+  firewalld:
+    port: 80/tcp 
+    permanent: true
+    immediate: true
+    state: enabled
