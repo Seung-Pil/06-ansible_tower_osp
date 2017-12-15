@@ -5,8 +5,9 @@
     - name: create ssh config for jumphost in tower
       copy:
         content: |
-          Hostname "{{ jumpbox }}"
-          IdentityFile ~/.ssh/openstack.pem
+          Host {{ JUMPBOX }}
+           Hostname {{ JUMPBOX }}
+           IdentityFile ~/.ssh/openstack.pem
            ForwardAgent yes
            User cloud-user
            StrictHostKeyChecking no
@@ -14,9 +15,11 @@
           Host 10.10.10.*
            User cloud-user
            IdentityFile ~/.ssh/openstack.pem
-           ProxyCommand ssh cloud-user@"{{ jumpbox }}" -W %h:%p -vvv
+           ProxyCommand ssh cloud-user@{{ JUMPBOX }} -W %h:%p -vvv
            StrictHostKeyChecking no
         dest: "/var/lib/awx/.ssh/config"
+        owner: awx
+        group: awx
         mode: 0400
           
     - name: where am i
